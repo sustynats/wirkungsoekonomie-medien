@@ -151,6 +151,10 @@ jobs:
               name: f'https://{name.lower()}.wirkungsoekonomie.de/' for name in portals
           }
           manifest_url = applications['Parlament'] + '_woek-build-manifest.json'
+          app_details = (
+              ('Akademie', applications['Akademie'] + 'studium', 'WÖk-SDG+'),
+              ('Institut', applications['Institut'] + 'methodik', 'SDG+-Referenz der Wirkungsökonomie'),
+          )
           methods = tuple(f'https://wirkungsoekonomie.de/werkzeuge/{slug}/' for slug in (
               'scorecards', 'impact-controlling', 'woek-ids'))
           scanner_routes = ('https://wirkungsoekonomie.de/anwendungen/scanner.html',
@@ -164,6 +168,7 @@ jobs:
                   self.base = base
                   self.main = False
                   self.links = []
+                  self.body_text = []
 
               def handle_starttag(self, tag, attrs):
                   if tag == 'main':
@@ -176,6 +181,10 @@ jobs:
               def handle_endtag(self, tag):
                   if tag == 'main':
                       self.main = False
+
+              def handle_data(self, data):
+                  if self.main:
+                      self.body_text.append(data)
 
           def get(url):
               request = Request(url, headers={'Cache-Control': 'no-cache', 'User-Agent': 'WOeK-SDGplus-release-verification/1.0'})
@@ -205,6 +214,16 @@ jobs:
               page_digest = hashlib.sha256(body).hexdigest() if body else 'unavailable'
               print(f'App domain {name}: HTTP {status}; {stable_url(resolved)}; response SHA-256 {page_digest}.')
 
+          def app_detail(item):
+              name, url, label = item
+              status, resolved, body = get(url)
+              parser = MainLinks(resolved)
+              parser.feed(body.decode('utf-8', 'replace'))
+              text = ' '.join(' '.join(parser.body_text).split())
+              match = status == 200 and label in text and canonical in parser.links
+              print(f'App detail {name}: HTTP {status}; {stable_url(resolved)}; visible marker and canonical link {"PASS" if match else "OPEN"}.')
+              return match
+
           def method_link(url):
               status, resolved, body = get(url)
               document = body.decode('utf-8', 'replace')
@@ -233,6 +252,7 @@ jobs:
           with ThreadPoolExecutor(max_workers=3) as pool:
               portal_results = list(pool.map(main_portal, portals.items()))
               list(pool.map(portal_application, applications.items()))
+              app_results = list(pool.map(app_detail, app_details))
               method_results = list(pool.map(method_link, methods))
               scanner_results = list(pool.map(scanner_link, scanner_routes))
           status, _, body = get(manifest_url)
@@ -252,4 +272,5 @@ jobs:
           print('SDGPLUS_PUBLIC_PORTAL_LINKS=PASS')
           assert all(method_results) and all(scanner_results), 'Missing versioned SDG+ tool reference'
           print('SDGPLUS_PUBLIC_TOOL_LINKS=PASS')
+          print('SDGPLUS_APP_DETAIL_LINKS=' + ('PASS' if all(app_results) else 'PARTIAL'))
           PY
