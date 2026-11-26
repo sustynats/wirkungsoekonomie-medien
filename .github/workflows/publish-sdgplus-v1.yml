@@ -68,7 +68,7 @@ jobs:
                  (.draft == false and .tag_name == $tag and .html_url == $public_url)))) |
               if length == 1 then .[0] else error("Exact release is missing or ambiguous") end')
           release_id=$(jq -er '.id | select(type == "number" and . > 0)' <<< "$release")
-          [[ "$release_id" =~ ^[0-9]+$ ]]
+          [[ "$release_id" == 459493334 ]]
           draft=$(jq -r '.draft' <<< "$release")
           upload_endpoint="https://uploads.github.com/repos/$repo/releases/$release_id/assets"
           if [[ "$draft" == true ]]; then
@@ -120,9 +120,14 @@ jobs:
             verify_asset "$asset" "$id" "$download/$asset"
           done
           if [[ "$draft" == true ]]; then
-            echo "Publish verified release $release_id"
-            gh api --method PATCH "repos/$repo/releases/$release_id" \
-              -f "tag_name=$tag" -f "target_commitish=$asset_commit" -F draft=false -f make_latest=false |
+            release_tag=$(jq -er '.tag_name | strings' <<< "$release")
+            echo "Publish verified release $release_id (current tag field: $release_tag)"
+            release_fields=(-F draft=false -f make_latest=false)
+            if [[ "$release_tag" != "$tag" ]]; then
+              [[ "$release_tag" == 'untagged-ae49c1842ae8dddd3d15' || -z "$release_tag" ]]
+              release_fields+=(-f "tag_name=$tag")
+            fi
+            gh api --method PATCH "repos/$repo/releases/$release_id" "${release_fields[@]}" |
               jq -e --arg id "$release_id" --arg tag "$tag" --arg url "$public_url" \
                 'select((.id | tostring) == $id and .tag_name == $tag and .draft == false and .html_url == $url)' >/dev/null
           fi
