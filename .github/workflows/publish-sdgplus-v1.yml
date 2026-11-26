@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
       - name: Publish only the verified edition
         shell: bash
         env:
@@ -34,10 +35,17 @@ jobs:
           set -euo pipefail
           repo='sustynats/wirkungsoekonomie-medien'
           tag='woek-sdgplus-v1'
+          asset_commit='f74bef484f7f541b4e179a5776dfc8eba40fa6b5'
+          draft_url="https://github.com/$repo/releases/tag/untagged-ae49c1842ae8dddd3d15"
+          public_url="https://github.com/$repo/releases/tag/$tag"
           [[ "$GITHUB_REPOSITORY" == "$repo" ]]
           [[ "$GITHUB_REF" == 'refs/heads/codex/sdgplus-v1-assets' ]]
           [[ "$GITHUB_SHA" =~ ^[a-f0-9]{40}$ && "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
 
+          target="refs/tags/$tag"
+          [[ "$(git ls-remote --exit-code --refs origin "$target")" == "$asset_commit"$'\t'"$target" ]]
+          [[ "$(git rev-parse "$target^{commit}")" == "$asset_commit" ]]
+          git diff --quiet --no-ext-diff "$asset_commit" HEAD -- "releases/$tag"
           cd "releases/$tag"
           expected=(sdgplus-handout-{de,en}.pdf sdgplus-kurzuebersicht-{de,en}.pdf
                     sdgplus-matrix-{de,en}.pdf sdgplus-matrix.{csv,json} sdgplus-reference.json
@@ -52,54 +60,65 @@ jobs:
           done
           diff -u <(LC_ALL=C sha256sum -- "${expected[@]}") SHA256SUMS.txt
 
-          target="refs/tags/$tag"
-          if existing_tag=$(git ls-remote --exit-code --refs origin "$target"); then
-            [[ "$existing_tag" == "$GITHUB_SHA"$'\t'"$target" ]]
-          else
-            [[ "$?" == 2 ]]
-            git push origin "HEAD:$target"
-            [[ "$(git ls-remote --exit-code --refs origin "$target")" == "$GITHUB_SHA"$'\t'"$target" ]]
-          fi
-
-          find_release() {
-            gh api --paginate "repos/$repo/releases?per_page=100" |
-              jq -s --arg tag "$tag" 'add | map(select(.tag_name == $tag)) | if length > 1 then error("Ambiguous release") else .[0] // null end'
-          }
-          release=$(find_release)
-          if [[ "$release" == null ]]; then
-            gh release create "$tag" --repo "$repo" --verify-tag --draft --latest=false \
-              --title 'SDG+ Toolkit v1.0' \
-              --notes 'Fassungsgebundene Materialien zur SDG+-Referenz der Wirkungsökonomie, Natalie Weber, 26. November 2026. Inhalte und Prüfsummen sind über diese Edition zitierbar.'
-            release=$(find_release)
-          fi
-          release_id=$(jq -er '.id | numbers' <<< "$release")
+          release=$(gh api --paginate "repos/$repo/releases?per_page=100" |
+            jq -es --arg draft_url "$draft_url" --arg public_url "$public_url" --arg tag "$tag" '
+              add | map(select(.name == "SDG+ Toolkit v1.0" and
+                ((.draft == true and .html_url == $draft_url) or
+                 (.draft == false and .tag_name == $tag and .html_url == $public_url)))) |
+              if length == 1 then .[0] else error("Exact release is missing or ambiguous") end')
+          release_id=$(jq -er '.id | select(type == "number" and . > 0)' <<< "$release")
+          [[ "$release_id" =~ ^[0-9]+$ ]]
           draft=$(jq -r '.draft' <<< "$release")
-          [[ "$draft" == true || "$draft" == false ]]
+          upload_endpoint="https://uploads.github.com/repos/$repo/releases/$release_id/assets"
+          if [[ "$draft" == true ]]; then
+            [[ "$(jq -r '.upload_url' <<< "$release")" == "$upload_endpoint{?name,label}" ]]
+          fi
 
-          assert_asset_names() {
+          read_assets() {
             gh api --paginate "repos/$repo/releases/$release_id/assets?per_page=100" |
-              jq -rs 'add | map(.name) | if length == (unique | length) then .[] else error("Ambiguous release assets") end'
+              jq -es 'add | if all(.[]; (.id | type == "number") and (.state == "uploaded")) and
+                (map(.name) | length == (unique | length)) then . else error("Invalid release asset metadata") end'
           }
-          existing_assets=$(assert_asset_names)
-          while IFS= read -r asset; do
-            [[ -z "$asset" ]] || printf '%s\n' "${assets[@]}" | grep -Fxq "$asset"
-          done <<< "$existing_assets"
+          verify_asset() {
+            local name="$1" id="$2" destination="$3"
+            [[ "$id" =~ ^[0-9]+$ ]]
+            gh api -H 'Accept: application/octet-stream' "repos/$repo/releases/assets/$id" > "$destination"
+            cmp -- "$name" "$destination"
+          }
+
+          existing=$(read_assets)
+          existing_names=$(jq -r '.[].name' <<< "$existing")
+          download=$(mktemp -d)
+          while IFS= read -r name; do
+            if [[ -n "$name" ]]; then
+              printf '%s\n' "${assets[@]}" | grep -Fxq -- "$name"
+              id=$(jq -er --arg name "$name" '.[] | select(.name == $name).id' <<< "$existing")
+              verify_asset "$name" "$id" "$download/$name"
+            fi
+          done <<< "$existing_names"
           for asset in "${assets[@]}"; do
-            if ! grep -Fxq "$asset" <<< "$existing_assets"; then
+            if ! grep -Fxq -- "$asset" <<< "$existing_names"; then
               [[ "$draft" == true ]]
-              gh release upload "$tag" "$asset" --repo "$repo"
+              curl -fsS --request POST --header 'Accept: application/vnd.github+json' \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'Content-Type: application/octet-stream' --data-binary "@$asset" \
+                "$upload_endpoint?name=$asset" |
+                jq -e --arg name "$asset" 'select(.name == $name and .state == "uploaded") | .id | numbers' >/dev/null
             fi
           done
+          verified=$(read_assets)
           diff -u <(printf '%s\n' "${assets[@]}" | LC_ALL=C sort) \
-                  <(assert_asset_names | LC_ALL=C sort)
-          download=$(mktemp -d)
-          gh release download "$tag" --repo "$repo" --pattern '*' --dir "$download"
+                  <(jq -r '.[].name' <<< "$verified" | LC_ALL=C sort)
           for asset in "${assets[@]}"; do
-            cmp -- "$asset" "$download/$asset"
+            id=$(jq -er --arg name "$asset" '.[] | select(.name == $name).id' <<< "$verified")
+            verify_asset "$asset" "$id" "$download/$asset"
           done
           if [[ "$draft" == true ]]; then
-            gh release edit "$tag" --repo "$repo" --verify-tag --draft=false --latest=false
+            gh api --method PATCH "repos/$repo/releases/$release_id" \
+              -f "tag_name=$tag" -f "target_commitish=$asset_commit" -F draft=false -f make_latest=false |
+              jq -e --arg id "$release_id" --arg tag "$tag" --arg url "$public_url" \
+                'select((.id | tostring) == $id and .tag_name == $tag and .draft == false and .html_url == $url)' >/dev/null
           fi
-          url=$(gh release view "$tag" --repo "$repo" --json isDraft,url |
-                jq -er 'select(.isDraft == false).url | strings')
-          printf 'Edition: %s\nAsset commit: %s\n' "$url" "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          [[ "$(git ls-remote --exit-code --refs origin "$target")" == "$asset_commit"$'\t'"$target" ]]
+          printf 'Edition: %s\nAsset commit: %s\nWorkflow commit: %s\n' "$public_url" "$asset_commit" "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
