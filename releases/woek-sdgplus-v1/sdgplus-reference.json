@@ -1,0 +1,615 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0",
+  "date": "2026-11-26",
+  "status": "FACHLICH_FREIGEGEBEN",
+  "effectiveFrom": "2026-11-26",
+  "modelAuthor": "Natalie Weber",
+  "currentReferenceUrl": "https://wirkungsoekonomie.de/verstehen/sdgs-sdgplus/",
+  "numberSource": "Risiko- und Resilienzdossier v0.1, §§7.3-7.11",
+  "registerVersion": "1.5",
+  "sources": [
+    {
+      "label": "Vereinte Nationen / United Nations - Agenda 2030, Abs. 9",
+      "url": "https://sdgs.un.org/2030agenda"
+    },
+    {
+      "label": "Vereinte Nationen / United Nations - SDG 16",
+      "url": "https://sdgs.un.org/goals/goal16"
+    },
+    {
+      "label": "UN Statistics - Global SDG Indicator Framework",
+      "url": "https://unstats.un.org/sdgs/indicators/indicators-list/"
+    },
+    {
+      "label": "WÖk - Führender Begriffsleitfaden v1.8, §4.2",
+      "url": "https://wirkungsoekonomie.de/bibliothek/woek-begriffsleitfaden-fuehrend/#guide-v18-object-1450"
+    },
+    {
+      "label": "WÖk - Risiko- und Resilienzdossier v0.1, Kapitel 7",
+      "url": "https://wirkungsoekonomie.de/bibliothek/sdgs-sdgplus-risiko-resilienzregister-systemresilienz/"
+    }
+  ],
+  "goals": [
+    {
+      "id": "demokratie",
+      "number": 1,
+      "color": "#253C6C",
+      "icon": "ballot",
+      "registerField": "Demokratie",
+      "registerRows": [
+        464,
+        481
+      ],
+      "de": {
+        "title": "Demokratiequalität",
+        "summary": "Menschen können an öffentlichen Entscheidungen mitwirken, Macht kontrollieren und Entscheidungen friedlich korrigieren.",
+        "why": "Wer wirksam mitwirken und Widerspruch einlegen kann, bringt übersehene Folgen früher ins Verfahren. So bleiben Fehlentscheidungen korrigierbar.",
+        "scope": "Beteiligung, Repräsentation, legitimer Machtwechsel und demokratische Korrektur. Die Qualität eines Verfahrens und die Zustimmung zu seinem Ergebnis sind verschiedene Befunde.",
+        "aliases": [
+          "Demokratie"
+        ],
+        "alt": "SDG+ 1 · Demokratiequalität",
+        "detail": "/verstehen/sdgs-sdgplus/ziele/demokratie/",
+        "glossary": "/begriffe/sdgplus-demokratie/",
+        "asset": "/assets/sdgplus/v1/de/demokratie.svg"
+      },
+      "en": {
+        "title": "Quality of democracy",
+        "summary": "People can influence public decisions, hold power to account and correct decisions peacefully.",
+        "why": "Effective participation and the ability to challenge decisions help bring overlooked consequences to light while they can still be addressed.",
+        "scope": "Participation, representation, legitimate transfers of power and democratic correction. The quality of a procedure and approval of its outcome are distinct findings.",
+        "aliases": [
+          "Democracy"
+        ],
+        "alt": "SDG+ 1 · Quality of democracy",
+        "detail": "/en/sdg-plus/goals/demokratie/",
+        "glossary": "/en/sdg-plus/glossary/demokratie/",
+        "asset": "/assets/sdgplus/v1/en/demokratie.svg"
+      },
+      "masterItems": [
+        "WOK-SYS-158",
+        "WOK-SYS-159",
+        "WOK-SYS-160",
+        "WOK-SYS-161",
+        "WOK-SYS-162",
+        "WOK-SYS-163",
+        "WOK-G-194",
+        "WOK-G-195",
+        "WOK-G-196",
+        "WOK-SYS-164",
+        "WOK-SYS-165",
+        "WOK-SYS-166",
+        "WOK-G-197",
+        "WOK-G-198",
+        "WOK-G-199",
+        "WOK-SC-146",
+        "WOK-SC-147",
+        "WOK-SC-148"
+      ],
+      "mappingStatus": "REGISTER_GROUP_VERIFIED_PUBLIC_MAPPING_APPROVED",
+      "indicatorMappingStatus": "OPEN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "medien",
+      "number": 2,
+      "color": "#63324D",
+      "icon": "news",
+      "registerField": "Medienvielfalt",
+      "registerRows": [
+        482,
+        499
+      ],
+      "de": {
+        "title": "Medienvielfalt und Medienunabhängigkeit",
+        "summary": "Menschen haben Zugang zu vielfältigen, redaktionell unabhängigen Informationsquellen und können deren Aussagen prüfen.",
+        "why": "Wenn unabhängige Redaktionen aus mehreren Blickwinkeln berichten, werden Fehler, Machtmissbrauch und blinde Flecken eher sichtbar.",
+        "scope": "Eigentum, redaktionelle Freiheit, Zugang und Angebotsvielfalt. Medienqualität bleibt als Quellenoffenheit und Korrekturpraxis sichtbar. Anzahl der Kanäle und Reichweite allein beantworten diese Fragen nicht.",
+        "aliases": [
+          "Medienqualität",
+          "Medienvielfalt"
+        ],
+        "alt": "SDG+ 2 · Medienvielfalt und Medienunabhängigkeit",
+        "detail": "/verstehen/sdgs-sdgplus/ziele/medien/",
+        "glossary": "/begriffe/sdgplus-medien/",
+        "asset": "/assets/sdgplus/v1/de/medien.svg"
+      },
+      "en": {
+        "title": "Media pluralism and independence",
+        "summary": "People can access diverse, editorially independent sources and verify their claims.",
+        "why": "Independent reporting from different perspectives can reveal errors, abuses of power and overlooked issues.",
+        "scope": "Ownership, editorial freedom, access and diversity of supply. Media quality includes the transparency of sources and the handling of corrections. Channel counts and reach offer only partial evidence.",
+        "aliases": [
+          "Media quality",
+          "Media diversity"
+        ],
+        "alt": "SDG+ 2 · Media pluralism and independence",
+        "detail": "/en/sdg-plus/goals/medien/",
+        "glossary": "/en/sdg-plus/glossary/medien/",
+        "asset": "/assets/sdgplus/v1/en/medien.svg"
+      },
+      "masterItems": [
+        "WOK-SYS-167",
+        "WOK-SYS-168",
+        "WOK-SYS-169",
+        "WOK-SYS-170",
+        "WOK-SYS-171",
+        "WOK-SYS-172",
+        "WOK-G-200",
+        "WOK-G-201",
+        "WOK-G-202",
+        "WOK-SYS-173",
+        "WOK-SYS-174",
+        "WOK-SYS-175",
+        "WOK-G-203",
+        "WOK-G-204",
+        "WOK-G-205",
+        "WOK-SC-149",
+        "WOK-SC-150",
+        "WOK-SC-151"
+      ],
+      "mappingStatus": "REGISTER_GROUP_VERIFIED_PUBLIC_MAPPING_APPROVED",
+      "indicatorMappingStatus": "OPEN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "rechtsstaat",
+      "number": 3,
+      "color": "#55406B",
+      "icon": "scales",
+      "registerField": "Rechtsstaatlichkeit",
+      "registerRows": [
+        500,
+        517
+      ],
+      "de": {
+        "title": "Rechtsstaatlichkeit",
+        "summary": "Staatliche Macht ist an Recht gebunden und Menschen können Entscheidungen vor einer unabhängigen Stelle überprüfen lassen.",
+        "why": "Wer eine willkürliche Entscheidung wirksam überprüfen lassen kann, ist weniger von der Macht einzelner Behörden oder Personen abhängig.",
+        "scope": "Unabhängige Kontrolle, faire Verfahren, Rechte und durchsetzbare Abhilfe. Wortlaut einer Regel und tatsächlicher Zugang zum Recht werden gesondert geprüft.",
+        "aliases": [
+          "Rechtsstaat"
+        ],
+        "alt": "SDG+ 3 · Rechtsstaatlichkeit",
+        "detail": "/verstehen/sdgs-sdgplus/ziele/rechtsstaat/",
+        "glossary": "/begriffe/sdgplus-rechtsstaat/",
+        "asset": "/assets/sdgplus/v1/de/rechtsstaat.svg"
+      },
+      "en": {
+        "title": "Rule of law",
+        "summary": "Public power is bound by law and people can have decisions reviewed independently.",
+        "why": "Effective review of arbitrary decisions reduces dependence on individual officials or authorities.",
+        "scope": "Independent oversight, fair procedures, rights and effective remedies. The wording of rules and access to justice in practice require separate evidence.",
+        "aliases": [
+          "Legal accountability"
+        ],
+        "alt": "SDG+ 3 · Rule of law",
+        "detail": "/en/sdg-plus/goals/rechtsstaat/",
+        "glossary": "/en/sdg-plus/glossary/rechtsstaat/",
+        "asset": "/assets/sdgplus/v1/en/rechtsstaat.svg"
+      },
+      "masterItems": [
+        "WOK-SYS-176",
+        "WOK-SYS-177",
+        "WOK-SYS-178",
+        "WOK-G-206",
+        "WOK-G-207",
+        "WOK-G-208",
+        "WOK-G-209",
+        "WOK-G-210",
+        "WOK-G-211",
+        "WOK-SC-152",
+        "WOK-SC-153",
+        "WOK-SC-154",
+        "WOK-G-212",
+        "WOK-G-213",
+        "WOK-G-214",
+        "WOK-SYS-179",
+        "WOK-SYS-180",
+        "WOK-SYS-181"
+      ],
+      "mappingStatus": "REGISTER_GROUP_VERIFIED_PUBLIC_MAPPING_APPROVED",
+      "indicatorMappingStatus": "OPEN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "diskurs",
+      "number": 4,
+      "color": "#775021",
+      "icon": "dialogue",
+      "registerField": "Diskurskultur",
+      "registerRows": [
+        518,
+        535
+      ],
+      "de": {
+        "title": "Diskurs- und Debattenkultur",
+        "summary": "Menschen können widersprechen, Gründe prüfen und Irrtümer korrigieren, ohne aus der Debatte gedrängt zu werden.",
+        "why": "Wo begründeter Widerspruch Gehör findet, können Gruppen aus Fehlern lernen und mit bleibenden Konflikten umgehen.",
+        "scope": "Zugang zur Debatte, Begründung, Widerspruch und Korrektur. Unterschiedliche Überzeugungen bleiben legitim. Individuelle Beliebtheit und Reichweite sind keine Diskursmaße.",
+        "aliases": [
+          "Diskursfähigkeit",
+          "Diskurskultur"
+        ],
+        "alt": "SDG+ 4 · Diskurs- und Debattenkultur",
+        "detail": "/verstehen/sdgs-sdgplus/ziele/diskurs/",
+        "glossary": "/begriffe/sdgplus-diskurs/",
+        "asset": "/assets/sdgplus/v1/de/diskurs.svg"
+      },
+      "en": {
+        "title": "Quality of public discourse and debate",
+        "summary": "People can disagree, examine reasons and correct errors without being pushed out of the discussion.",
+        "why": "Hearing and engaging with reasoned dissent helps groups learn from errors and handle persistent disagreements.",
+        "scope": "Access to debate, reasons, dissent and correction. Different views remain legitimate. Popularity and reach do not measure the quality of discourse.",
+        "aliases": [
+          "Capacity for public discourse",
+          "Debate culture"
+        ],
+        "alt": "SDG+ 4 · Quality of public discourse and debate",
+        "detail": "/en/sdg-plus/goals/diskurs/",
+        "glossary": "/en/sdg-plus/glossary/diskurs/",
+        "asset": "/assets/sdgplus/v1/en/diskurs.svg"
+      },
+      "masterItems": [
+        "WOK-SYS-182",
+        "WOK-SYS-183",
+        "WOK-SYS-184",
+        "WOK-SYS-185",
+        "WOK-SYS-186",
+        "WOK-SYS-187",
+        "WOK-G-215",
+        "WOK-G-216",
+        "WOK-G-217",
+        "WOK-SYS-188",
+        "WOK-SYS-189",
+        "WOK-SYS-190",
+        "WOK-G-218",
+        "WOK-G-219",
+        "WOK-G-220",
+        "WOK-SC-155",
+        "WOK-SC-156",
+        "WOK-SC-157"
+      ],
+      "mappingStatus": "REGISTER_GROUP_VERIFIED_PUBLIC_MAPPING_APPROVED",
+      "indicatorMappingStatus": "OPEN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "resilienz",
+      "number": 5,
+      "color": "#295849",
+      "icon": "bridge",
+      "registerField": "Resilienz",
+      "registerRows": [
+        536,
+        553
+      ],
+      "de": {
+        "title": "Gesellschaftliche Resilienz",
+        "summary": "Gesellschaften können Krisen bewältigen, Grundfunktionen sichern und aus Belastungen lernen.",
+        "why": "Fallen Versorgung, erreichbare Hilfe und faire Entscheidungen gleichzeitig aus, können sich Schäden verstärken und auf andere Gruppen verlagern.",
+        "scope": "Vorsorge, Krisenlernen und tragfähige Versorgung. Gesellschaftlicher Zusammenhalt und faire Lastenverteilung sind Bezüge. Die Erhaltung eines schädlichen Zustands ist für die Bewertung gesondert relevant.",
+        "aliases": [
+          "Resilienz",
+          "gesellschaftlicher Zusammenhalt"
+        ],
+        "alt": "SDG+ 5 · Gesellschaftliche Resilienz",
+        "detail": "/verstehen/sdgs-sdgplus/ziele/resilienz/",
+        "glossary": "/begriffe/sdgplus-resilienz/",
+        "asset": "/assets/sdgplus/v1/de/resilienz.svg"
+      },
+      "en": {
+        "title": "Societal resilience",
+        "summary": "Societies can cope with shocks, maintain essential functions and learn from crises.",
+        "why": "When essential services, accessible support and fair decisions fail together, harm can compound and shift to other groups.",
+        "scope": "Preparedness, learning and continuity of essential services. Social cohesion and fair distribution of burdens are related aspects. Preserving a harmful condition calls for separate assessment.",
+        "aliases": [
+          "Resilience",
+          "Social cohesion"
+        ],
+        "alt": "SDG+ 5 · Societal resilience",
+        "detail": "/en/sdg-plus/goals/resilienz/",
+        "glossary": "/en/sdg-plus/glossary/resilienz/",
+        "asset": "/assets/sdgplus/v1/en/resilienz.svg"
+      },
+      "masterItems": [
+        "WOK-G-221",
+        "WOK-G-222",
+        "WOK-G-223",
+        "WOK-E-224",
+        "WOK-E-225",
+        "WOK-E-226",
+        "WOK-G-224",
+        "WOK-G-225",
+        "WOK-G-226",
+        "WOK-SC-158",
+        "WOK-SC-159",
+        "WOK-SC-160",
+        "WOK-SYS-191",
+        "WOK-SYS-192",
+        "WOK-SYS-193",
+        "WOK-RE-122",
+        "WOK-RE-123",
+        "WOK-RE-124"
+      ],
+      "mappingStatus": "REGISTER_GROUP_VERIFIED_PUBLIC_MAPPING_APPROVED",
+      "indicatorMappingStatus": "OPEN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "technologie",
+      "number": 6,
+      "color": "#135761",
+      "icon": "controls",
+      "registerField": "Technologie-Verantwortung",
+      "registerRows": [
+        554,
+        571
+      ],
+      "de": {
+        "title": "Technologie- und Digitalverantwortung",
+        "summary": "Technische Systeme sind so gestaltet und beaufsichtigt, dass Betroffene Handlungsspielräume, Rechte und Abhilfe behalten.",
+        "why": "Digitale Entscheidungen können Nachteile in großer Zahl wiederholen. Kontrolle, überprüfbare Verfahren und erreichbare Auswege machen Fehler korrigierbar.",
+        "scope": "Digitale Selbstbestimmung, systemische Risiken, Zugang, Eingriffsmöglichkeiten und Verantwortlichkeit. Zugang zu einem Dienst ist ein Teilbefund. Selbstbestimmung und Abhilfe brauchen eigene Belege.",
+        "aliases": [
+          "digitale Selbstbestimmung",
+          "Technologie-Verantwortung"
+        ],
+        "alt": "SDG+ 6 · Technologie- und Digitalverantwortung",
+        "detail": "/verstehen/sdgs-sdgplus/ziele/technologie/",
+        "glossary": "/begriffe/sdgplus-technologie/",
+        "asset": "/assets/sdgplus/v1/de/technologie.svg"
+      },
+      "en": {
+        "title": "Technology and digital responsibility",
+        "summary": "Technology is designed and overseen so that people retain control, rights and access to remedies.",
+        "why": "Digital decisions can repeat harms at scale. Oversight, reviewable procedures and practical alternatives enable correction.",
+        "scope": "Digital self-determination, systemic risks, access, intervention and accountability. Access is one finding. Control and remedies need their own evidence.",
+        "aliases": [
+          "Digital self-determination",
+          "Technology responsibility"
+        ],
+        "alt": "SDG+ 6 · Technology and digital responsibility",
+        "detail": "/en/sdg-plus/goals/technologie/",
+        "glossary": "/en/sdg-plus/glossary/technologie/",
+        "asset": "/assets/sdgplus/v1/en/technologie.svg"
+      },
+      "masterItems": [
+        "WOK-G-227",
+        "WOK-G-228",
+        "WOK-G-229",
+        "WOK-G-230",
+        "WOK-G-231",
+        "WOK-G-232",
+        "WOK-G-233",
+        "WOK-G-234",
+        "WOK-G-235",
+        "WOK-SYS-194",
+        "WOK-SYS-195",
+        "WOK-SYS-196",
+        "WOK-SC-161",
+        "WOK-SC-162",
+        "WOK-SC-163",
+        "WOK-P-131",
+        "WOK-P-132",
+        "WOK-P-133"
+      ],
+      "mappingStatus": "REGISTER_GROUP_VERIFIED_PUBLIC_MAPPING_APPROVED",
+      "indicatorMappingStatus": "OPEN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "kooperation",
+      "number": 7,
+      "color": "#455623",
+      "icon": "network",
+      "registerField": "Kooperationen/Systemwandel",
+      "registerRows": [
+        572,
+        589
+      ],
+      "de": {
+        "title": "Systemische Kooperation",
+        "summary": "Akteure stimmen Aufgaben und Anreize über Zuständigkeitsgrenzen hinweg ab und prüfen gemeinsam die Folgen.",
+        "why": "Einzeln sinnvolle Entscheidungen können zusammen ein Problem verschärfen. Koordination macht Abhängigkeiten und Kostenverlagerungen früh sichtbar.",
+        "scope": "Koordination, Regeln, Rechenschaft und Lernschleifen. Ein Vertrag oder viele Partner zeigen, dass es Zusammenarbeit gibt. Die Wirkung hängt von ihrer Durchführung und den Folgen ab.",
+        "aliases": [
+          "Kooperationen/Systemwandel"
+        ],
+        "alt": "SDG+ 7 · Systemische Kooperation",
+        "detail": "/verstehen/sdgs-sdgplus/ziele/kooperation/",
+        "glossary": "/begriffe/sdgplus-kooperation/",
+        "asset": "/assets/sdgplus/v1/de/kooperation.svg"
+      },
+      "en": {
+        "title": "Systemic cooperation",
+        "summary": "Actors coordinate responsibilities and incentives across boundaries and jointly review outcomes.",
+        "why": "Decisions that make sense in isolation can worsen a shared problem. Coordination can reveal dependencies and shifts in who bears the costs.",
+        "scope": "Coordination, rules, accountability and feedback. Agreements or partner counts show that cooperation exists. Its impact depends on implementation and outcomes.",
+        "aliases": [
+          "Cooperation and system change"
+        ],
+        "alt": "SDG+ 7 · Systemic cooperation",
+        "detail": "/en/sdg-plus/goals/kooperation/",
+        "glossary": "/en/sdg-plus/glossary/kooperation/",
+        "asset": "/assets/sdgplus/v1/en/kooperation.svg"
+      },
+      "masterItems": [
+        "WOK-SYS-197",
+        "WOK-SYS-198",
+        "WOK-SYS-199",
+        "WOK-SYS-200",
+        "WOK-SYS-201",
+        "WOK-SYS-202",
+        "WOK-G-236",
+        "WOK-G-237",
+        "WOK-G-238",
+        "WOK-SC-164",
+        "WOK-SC-165",
+        "WOK-SC-166",
+        "WOK-E-227",
+        "WOK-E-228",
+        "WOK-E-229",
+        "WOK-P-134",
+        "WOK-P-135",
+        "WOK-P-136"
+      ],
+      "mappingStatus": "REGISTER_GROUP_VERIFIED_PUBLIC_MAPPING_APPROVED",
+      "indicatorMappingStatus": "OPEN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "vielfalt",
+      "number": 8,
+      "color": "#763C26",
+      "icon": "people",
+      "registerField": "Kultur",
+      "registerRows": [
+        590,
+        607
+      ],
+      "de": {
+        "title": "Kulturelle Vielfalt und Inklusion",
+        "summary": "Menschen können unabhängig von Herkunft und Zugehörigkeit am kulturellen und gesellschaftlichen Leben teilhaben.",
+        "why": "Barrieren schließen Menschen aus und lassen Institutionen wichtige Erfahrungen übersehen. Zugängliche Teilhabe verbessert die Grundlage für gemeinsame Entscheidungen.",
+        "scope": "Kulturelle Ausdrucksformen, Zugang, Antidiskriminierung und wirksame Teilhabe. Zusammenhalt wird auch daran erkennbar, wie eine Gesellschaft mit Unterschiedlichkeit und Konflikten umgeht.",
+        "aliases": [
+          "Kultur",
+          "gesellschaftlicher Zusammenhalt"
+        ],
+        "alt": "SDG+ 8 · Kulturelle Vielfalt und Inklusion",
+        "detail": "/verstehen/sdgs-sdgplus/ziele/vielfalt/",
+        "glossary": "/begriffe/sdgplus-vielfalt/",
+        "asset": "/assets/sdgplus/v1/de/vielfalt.svg"
+      },
+      "en": {
+        "title": "Cultural diversity and inclusion",
+        "summary": "People can participate in cultural and social life regardless of background or group affiliation.",
+        "why": "Barriers exclude people and keep institutions from hearing their experiences. Accessible participation improves the basis for shared decisions.",
+        "scope": "Cultural expression, access, non-discrimination and meaningful participation. The way a society handles differences and conflict also reveals aspects of its cohesion.",
+        "aliases": [
+          "Culture",
+          "Social cohesion"
+        ],
+        "alt": "SDG+ 8 · Cultural diversity and inclusion",
+        "detail": "/en/sdg-plus/goals/vielfalt/",
+        "glossary": "/en/sdg-plus/glossary/vielfalt/",
+        "asset": "/assets/sdgplus/v1/en/vielfalt.svg"
+      },
+      "masterItems": [
+        "WOK-SYS-203",
+        "WOK-SYS-204",
+        "WOK-SYS-205",
+        "WOK-SYS-206",
+        "WOK-SYS-207",
+        "WOK-SYS-208",
+        "WOK-G-239",
+        "WOK-G-240",
+        "WOK-G-241",
+        "WOK-SC-167",
+        "WOK-SC-168",
+        "WOK-SC-169",
+        "WOK-RE-125",
+        "WOK-RE-126",
+        "WOK-RE-127",
+        "WOK-SYS-209",
+        "WOK-SYS-210",
+        "WOK-SYS-211"
+      ],
+      "mappingStatus": "REGISTER_GROUP_VERIFIED_PUBLIC_MAPPING_APPROVED",
+      "indicatorMappingStatus": "OPEN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "transparenz",
+      "number": 9,
+      "color": "#39576D",
+      "icon": "oversight",
+      "registerField": "Transparenz/Open Data",
+      "registerRows": [
+        608,
+        625
+      ],
+      "de": {
+        "title": "Öffentliche Transparenz und Rechenschaft",
+        "summary": "Öffentliche Entscheidungen und ihre Gründe sind zugänglich. Zuständige Stellen erklären Fehler und ermöglichen Korrekturen.",
+        "why": "Aus bloßer Veröffentlichung entsteht noch keine Kontrolle. Erst verständliche Informationen und ein Weg zur Rückfrage helfen, Fehler aufzudecken und zu beheben.",
+        "scope": "Verständliche Informationen, Verantwortlichkeit, unabhängige Kontrolle und Rückmeldung. Vertrauenswürdigkeit eines Verfahrens und gemessenes Vertrauen sind eigene Befunde.",
+        "aliases": [
+          "Transparenz/Open Data",
+          "institutionelles Vertrauen"
+        ],
+        "alt": "SDG+ 9 · Öffentliche Transparenz und Rechenschaft",
+        "detail": "/verstehen/sdgs-sdgplus/ziele/transparenz/",
+        "glossary": "/begriffe/sdgplus-transparenz/",
+        "asset": "/assets/sdgplus/v1/de/transparenz.svg"
+      },
+      "en": {
+        "title": "Public transparency and accountability",
+        "summary": "Public decisions and their reasons are accessible. Responsible bodies explain errors and provide ways to correct them.",
+        "why": "Understandable information and a way to question decisions help people uncover and correct errors. Publication alone is only a first step.",
+        "scope": "Understandable information, responsibility, independent oversight and feedback. Institutional trustworthiness and reported trust are distinct findings.",
+        "aliases": [
+          "Transparency and open data",
+          "Institutional trust"
+        ],
+        "alt": "SDG+ 9 · Public transparency and accountability",
+        "detail": "/en/sdg-plus/goals/transparenz/",
+        "glossary": "/en/sdg-plus/glossary/transparenz/",
+        "asset": "/assets/sdgplus/v1/en/transparenz.svg"
+      },
+      "masterItems": [
+        "WOK-SYS-212",
+        "WOK-SYS-213",
+        "WOK-SYS-214",
+        "WOK-G-242",
+        "WOK-G-243",
+        "WOK-G-244",
+        "WOK-SC-170",
+        "WOK-SC-171",
+        "WOK-SC-172",
+        "WOK-SYS-215",
+        "WOK-SYS-216",
+        "WOK-SYS-217",
+        "WOK-G-245",
+        "WOK-G-246",
+        "WOK-G-247",
+        "WOK-SYS-218",
+        "WOK-SYS-219",
+        "WOK-SYS-220"
+      ],
+      "mappingStatus": "REGISTER_GROUP_VERIFIED_PUBLIC_MAPPING_APPROVED",
+      "indicatorMappingStatus": "OPEN_REVIEW_REQUIRED"
+    }
+  ],
+  "registerSource": {
+    "version": "1.5",
+    "sheet": "01_Item_Register",
+    "publicUrl": "https://wirkungsoekonomie.de/bibliothek/woek-master-items-register/",
+    "sha256": "ee0a5171a8e5ead905ec40687ebf44b0169615552bb57b3ee0cf78ad05b22672"
+  },
+  "identifierPolicy": {
+    "targetIdScope": "public-sdgplus-reference",
+    "legacyApi": "/api/v1/sdg-plus.json",
+    "legacyApiMigration": "preserve",
+    "registerItemIds": "retain-existing"
+  },
+  "approval": {
+    "version": "1.0",
+    "date": "2026-11-26",
+    "approvedBy": "Natalie Weber",
+    "decisionReference": "Freigabe des vorgelegten SDG+-Prüfpakets vom 26.11.2026",
+    "reviewPackageSha256": "31413d65356e7b415176bcb2925b993046afa58b7106befa6ea182204f78f38d"
+  },
+  "usage": {
+    "license": null,
+    "termsUrl": "https://wirkungsoekonomie.de/impressum.html",
+    "rightsHolder": "Natalie Weber",
+    "contactUrl": "https://wirkungsoekonomie.de/w/natalie-weber/presse/"
+  },
+  "canonicalUrls": {
+    "de": {
+      "overview": "/verstehen/sdgs-sdgplus/",
+      "matrix": "/verstehen/sdgs-sdgplus/matrix/",
+      "toolkit": "/verstehen/sdgs-sdgplus/toolkit/"
+    },
+    "en": {
+      "overview": "/en/sdg-plus/",
+      "matrix": "/en/sdg-plus/matrix/",
+      "toolkit": "/en/sdg-plus/toolkit/"
+    }
+  }
+}

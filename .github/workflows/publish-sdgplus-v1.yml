@@ -1,0 +1,105 @@
+name: Publish SDG+ toolkit v1
+
+on:
+  push:
+    branches:
+      - codex/sdgplus-v1-assets
+    paths:
+      - .github/workflows/publish-sdgplus-v1.yml
+      - releases/woek-sdgplus-v1/**
+
+permissions: {}
+
+concurrency:
+  group: woek-sdgplus-v1
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'sustynats/wirkungsoekonomie-medien' && github.ref == 'refs/heads/codex/sdgplus-v1-assets'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the exact public asset commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Publish only the verified edition
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          repo='sustynats/wirkungsoekonomie-medien'
+          tag='woek-sdgplus-v1'
+          [[ "$GITHUB_REPOSITORY" == "$repo" ]]
+          [[ "$GITHUB_REF" == 'refs/heads/codex/sdgplus-v1-assets' ]]
+          [[ "$GITHUB_SHA" =~ ^[a-f0-9]{40}$ && "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+
+          cd "releases/$tag"
+          expected=(sdgplus-handout-{de,en}.pdf sdgplus-kurzuebersicht-{de,en}.pdf
+                    sdgplus-matrix-{de,en}.pdf sdgplus-matrix.{csv,json} sdgplus-reference.json
+                    sdgplus-workshop-{de,en}.pptx sdgplus-zielkarten-{de,en}.zip
+                    WOeK_Begriffsleitfaden_fuehrend_v1.9_2026-11-26.pdf
+                    WOeK_Begriffsleitfaden_v1.9_SDGplus_Addendum_2026-11-26.pdf)
+          assets=("${expected[@]}" SHA256SUMS.txt)
+          diff -u <(printf '%s\n' "${assets[@]}" | LC_ALL=C sort) \
+                  <(find . -mindepth 1 -maxdepth 1 -printf '%f\n' | LC_ALL=C sort)
+          for asset in "${assets[@]}"; do
+            [[ -f "$asset" && -s "$asset" && ! -L "$asset" ]]
+          done
+          diff -u <(LC_ALL=C sha256sum -- "${expected[@]}") SHA256SUMS.txt
+
+          target="refs/tags/$tag"
+          if existing_tag=$(git ls-remote --exit-code --refs origin "$target"); then
+            [[ "$existing_tag" == "$GITHUB_SHA"$'\t'"$target" ]]
+          else
+            [[ "$?" == 2 ]]
+            git push origin "HEAD:$target"
+            [[ "$(git ls-remote --exit-code --refs origin "$target")" == "$GITHUB_SHA"$'\t'"$target" ]]
+          fi
+
+          find_release() {
+            gh api --paginate "repos/$repo/releases?per_page=100" |
+              jq -s --arg tag "$tag" 'add | map(select(.tag_name == $tag)) | if length > 1 then error("Ambiguous release") else .[0] // null end'
+          }
+          release=$(find_release)
+          if [[ "$release" == null ]]; then
+            gh release create "$tag" --repo "$repo" --verify-tag --draft --latest=false \
+              --title 'SDG+ Toolkit v1.0' \
+              --notes 'Fassungsgebundene Materialien zur SDG+-Referenz der Wirkungsökonomie, Natalie Weber, 26. November 2026. Inhalte und Prüfsummen sind über diese Edition zitierbar.'
+            release=$(find_release)
+          fi
+          release_id=$(jq -er '.id | numbers' <<< "$release")
+          draft=$(jq -r '.draft' <<< "$release")
+          [[ "$draft" == true || "$draft" == false ]]
+
+          assert_asset_names() {
+            gh api --paginate "repos/$repo/releases/$release_id/assets?per_page=100" |
+              jq -rs 'add | map(.name) | if length == (unique | length) then .[] else error("Ambiguous release assets") end'
+          }
+          existing_assets=$(assert_asset_names)
+          while IFS= read -r asset; do
+            [[ -z "$asset" ]] || printf '%s\n' "${assets[@]}" | grep -Fxq "$asset"
+          done <<< "$existing_assets"
+          for asset in "${assets[@]}"; do
+            if ! grep -Fxq "$asset" <<< "$existing_assets"; then
+              [[ "$draft" == true ]]
+              gh release upload "$tag" "$asset" --repo "$repo"
+            fi
+          done
+          diff -u <(printf '%s\n' "${assets[@]}" | LC_ALL=C sort) \
+                  <(assert_asset_names | LC_ALL=C sort)
+          download=$(mktemp -d)
+          gh release download "$tag" --repo "$repo" --pattern '*' --dir "$download"
+          for asset in "${assets[@]}"; do
+            cmp -- "$asset" "$download/$asset"
+          done
+          if [[ "$draft" == true ]]; then
+            gh release edit "$tag" --repo "$repo" --verify-tag --draft=false --latest=false
+          fi
+          url=$(gh release view "$tag" --repo "$repo" --json isDraft,url |
+                jq -er 'select(.isDraft == false).url | strings')
+          printf 'Edition: %s\nAsset commit: %s\n' "$url" "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
