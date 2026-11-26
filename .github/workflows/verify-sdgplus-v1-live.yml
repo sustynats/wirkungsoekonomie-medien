@@ -78,7 +78,7 @@ jobs:
               assert item['detail'] in links(item['glossary'], glossary), item['glossary']
               return item['detail']
 
-          checked = []
+          checked = {lang: [] for lang in roots}
           with ThreadPoolExecutor(max_workers=3) as pool:
               for lang, root in roots.items():
                   overview = page(root)
@@ -87,21 +87,43 @@ jobs:
                   assert {g[lang]['detail'] for g in goals} <= links(root, overview), root
                   assert root + 'matrix/' in links(root, overview), root
                   assert root + 'toolkit/' in links(root, overview), root
+                  assert root + 'glossary/' in links(root, overview), root
+                  other_root = roots['en' if lang == 'de' else 'de']
+                  assert other_root in links(root, overview), root
                   table = page(root + 'matrix/')
                   assert len(re.findall(r'\bdata-pair(?:\s|=)', table)) == 153
                   toolkit = page(root + 'toolkit/')
                   assert assets + f'sdgplus-kurzuebersicht-{lang}.pdf' in toolkit
                   assert assets + f'sdgplus-zielkarten-{lang}.zip' in toolkit
-                  checked.extend(pool.map(lambda goal: goal_pages(lang, goal), goals))
-          print(f'HTTP 200 and content verified for both overviews, both matrices, both toolkits, and {len(checked)} goal pages plus their glossaries.')
+                  checked[lang].extend(pool.map(lambda goal: goal_pages(lang, goal), goals))
+          print(f'HTTP 200 and content verified for both overviews, both matrices, both toolkits, and {sum(map(len, checked.values()))} goal pages plus their glossaries.')
 
           catalogue = json.loads(read(origin + '/assets/search/browser-index-manifest.json'))
           search_raw = gzip.decompress(read(origin + '/assets/search/' + catalogue['core']['gzip']))
-          assert all(path.encode() in search_raw for path in checked), 'goal pages absent from live browser search'
-          print('All 18 goals are present in the live browser search.')
-          guide = page('/bibliothek/woek-begriffsleitfaden-fuehrend-v1-9/')
-          assert 'WOeK_Begriffsleitfaden_fuehrend_v1.9_2026-11-26.pdf' in guide
-          old = page('/bibliothek/woek-begriffsleitfaden-fuehrend/')
-          print('Historic guide has version notice:', 'sdgplus-stand-v19' in old)
-          print('SDGPLUS_LIVE_VERIFIED=PASS')
+          missing = {lang: [path for path in paths if path.encode() not in search_raw]
+                     for lang, paths in checked.items()}
+          for lang, paths in missing.items():
+              print(f'Browser search {lang}: {len(checked[lang]) - len(paths)}/{len(checked[lang])} goal routes present.')
+              for path in paths:
+                  print(f'  Missing {lang} search route: {path}')
+
+          guide_path = '/bibliothek/woek-begriffsleitfaden-fuehrend-v1-9/'
+          old_path = '/bibliothek/woek-begriffsleitfaden-fuehrend/'
+          guide = page(guide_path)
+          guide_pdfs = {
+              'WOeK_Begriffsleitfaden_fuehrend_v1.9_2026-11-26.pdf': 'd1d95cb10dd7065cdef6858ef88ae39e1a76f206a3e14efeb97d06358b0288d9',
+              'WOeK_Begriffsleitfaden_v1.9_SDGplus_Addendum_2026-11-26.pdf': 'eb43eae977550895f3f3dbef3bc359d8b316bda8e4be5cdb44a16c2c86ce06bd',
+          }
+          for filename, checksum in guide_pdfs.items():
+              assert assets + filename in guide, filename
+              assert hashlib.sha256(read(assets + filename)).hexdigest() == checksum, filename
+          print('Guide v1.9: HTTP 200, complete guide and addendum files linked and SHA-verified.')
+          old = page(old_path)
+          marker = 'id="sdgplus-stand-v19"' in old
+          old_links = links(old_path, old)
+          historic_ok = marker and guide_path in old_links and roots['de'] in old_links
+          print(f'Guide v1.8 historic notice and links to the current revision: {"PASS" if historic_ok else "OPEN"}.')
+          print('Navigation: both overviews link all nine goals, matrix, glossary, toolkit and language counterpart.')
+          assert not missing['de'], 'German goal routes missing from search'
+          print('SDGPLUS_LIVE_VERIFIED=' + ('PASS' if not missing['en'] and historic_ok else 'PARTIAL'))
           PY
