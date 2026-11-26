@@ -127,3 +127,94 @@ jobs:
           assert not missing['de'], 'German goal routes missing from search'
           print('SDGPLUS_LIVE_VERIFIED=' + ('PASS' if not missing['en'] and historic_ok else 'PARTIAL'))
           PY
+      - name: Check the three public portal links and app status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -u - <<'PY'
+          import hashlib
+          import json
+          import re
+          from concurrent.futures import ThreadPoolExecutor
+          from html.parser import HTMLParser
+          from urllib.error import HTTPError, URLError
+          from urllib.parse import urljoin, urlsplit
+          from urllib.request import Request, urlopen
+
+          canonical = 'https://wirkungsoekonomie.de/verstehen/sdgs-sdgplus/#sdgplus'
+          portals = {
+              'Akademie': 'https://wirkungsoekonomie.de/akademie.html',
+              'Institut': 'https://wirkungsoekonomie.de/institut/',
+              'Parlament': 'https://wirkungsoekonomie.de/parlament/',
+          }
+          applications = {
+              name: f'https://{name.lower()}.wirkungsoekonomie.de/' for name in portals
+          }
+          manifest_url = applications['Parlament'] + '_woek-build-manifest.json'
+
+          class MainLinks(HTMLParser):
+              def __init__(self, base):
+                  super().__init__()
+                  self.base = base
+                  self.main = False
+                  self.links = []
+
+              def handle_starttag(self, tag, attrs):
+                  if tag == 'main':
+                      self.main = True
+                  elif tag == 'a' and self.main:
+                      href = dict(attrs).get('href')
+                      if href:
+                          self.links.append(urljoin(self.base, href))
+
+              def handle_endtag(self, tag):
+                  if tag == 'main':
+                      self.main = False
+
+          def get(url):
+              request = Request(url, headers={'Cache-Control': 'no-cache', 'User-Agent': 'WOeK-SDGplus-release-verification/1.0'})
+              try:
+                  with urlopen(request, timeout=15) as response:
+                      return response.status, response.url, response.read(2_000_000)
+              except HTTPError as error:
+                  return error.code, error.url, b''
+              except (URLError, TimeoutError, OSError):
+                  return 'unavailable', url, b''
+
+          def stable_url(url):
+              return urlsplit(url)._replace(query='', fragment='').geturl()
+
+          def main_portal(item):
+              name, url = item
+              status, resolved, body = get(url)
+              parser = MainLinks(resolved)
+              parser.feed(body.decode('utf-8', 'replace'))
+              count = parser.links.count(canonical)
+              print(f'Main domain {name}: HTTP {status}; {stable_url(resolved)}; canonical SDG+ content links: {count}.')
+              return status == 200 and count == 1
+
+          def portal_application(item):
+              name, url = item
+              status, resolved, body = get(url)
+              page_digest = hashlib.sha256(body).hexdigest() if body else 'unavailable'
+              print(f'App domain {name}: HTTP {status}; {stable_url(resolved)}; response SHA-256 {page_digest}.')
+
+          with ThreadPoolExecutor(max_workers=3) as pool:
+              portal_results = list(pool.map(main_portal, portals.items()))
+              list(pool.map(portal_application, applications.items()))
+          status, _, body = get(manifest_url)
+          fingerprint = {}
+          if status == 200:
+              try:
+                  manifest = json.loads(body)
+              except (ValueError, UnicodeDecodeError):
+                  manifest = {}
+              if isinstance(manifest, dict):
+                  for key in ('source_commit', 'source_fingerprint', 'archive_sha256'):
+                      value = manifest.get(key)
+                      if isinstance(value, str) and re.fullmatch(r'(?:[0-9a-f]{40}|[0-9a-f]{64})', value):
+                          fingerprint[key] = value
+          print(f'Parlament build manifest: HTTP {status}; published fingerprints: {json.dumps(fingerprint, sort_keys=True)}.')
+          assert all(portal_results), 'Missing public SDG+ link in one or more main-domain portal introductions'
+          print('SDGPLUS_PUBLIC_PORTAL_LINKS=PASS')
+          PY
