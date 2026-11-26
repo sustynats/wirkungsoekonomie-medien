@@ -1,0 +1,107 @@
+name: Verify public SDG+ v1.0 release
+
+on:
+  push:
+    branches: [codex/sdgplus-v1-live-check]
+
+permissions: {}
+
+jobs:
+  verify:
+    if: github.repository == 'sustynats/wirkungsoekonomie-medien'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Check live pages, navigation, search and versioned data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -u - <<'PY'
+          import gzip
+          import hashlib
+          import html
+          import json
+          import re
+          import time
+          from concurrent.futures import ThreadPoolExecutor
+          from urllib.parse import urljoin, urlsplit
+          from urllib.request import Request, urlopen
+
+          origin = 'https://wirkungsoekonomie.de'
+          assets = 'https://github.com/sustynats/wirkungsoekonomie-medien/releases/download/woek-sdgplus-v1/'
+          roots = {'de': '/verstehen/sdgs-sdgplus/', 'en': '/en/sdg-plus/'}
+
+          def read(url):
+              req = Request(url, headers={'Cache-Control': 'no-cache', 'User-Agent': 'WOeK-SDGplus-release-verification/1.0'})
+              with urlopen(req, timeout=20) as res:
+                  assert res.status == 200, (url, res.status)
+                  return res.read()
+
+          def page(path):
+              return read(origin + path).decode('utf-8')
+
+          def links(path, content):
+              return {urlsplit(urljoin(origin + path, html.unescape(item))).path
+                      for item in re.findall(r'<a\b[^>]*\bhref=["\']([^"\']+)["\']', content, re.I)}
+
+          raw = read(assets + 'sdgplus-reference.json')
+          assert hashlib.sha256(raw).hexdigest() == 'ad482e092422779f2f81a72812f7069f8c68d59dbb89830c12a9c0fa42d71768'
+          reference = json.loads(raw)
+          goals = reference['goals']
+          assert [goal['number'] for goal in goals] == list(range(1, 10))
+          for attempt in range(7):
+              try:
+                  current = json.loads(read(origin + '/api/v1/sdg-plus/reference-v1.json'))
+                  assert current == reference
+                  break
+              except Exception:
+                  if attempt == 6:
+                      raise
+                  time.sleep(15)
+          print('Live reference JSON equals the SHA-verified media edition.')
+          matrix = json.loads(read(origin + '/api/v1/sdg-plus/matrix-v1.json'))
+          assert matrix == json.loads(read(assets + 'sdgplus-matrix.json'))
+          assert len(matrix['pairs']) == 153
+          legacy = json.loads(read(origin + '/api/v1/sdg-plus.json'))
+          assert len(legacy['items']) == legacy['count'] == 24
+          assert [item['number'] for item in legacy['items'] if item['type'] == 'sdg'] == list(range(1, 18))
+          assert len([item for item in legacy['items'] if item['type'] == 'sdgplus']) == 7
+          print('Live matrix has 153 rows. Legacy API includes 17 UN goals and seven compatible items.')
+
+          def goal_pages(lang, goal):
+              item = goal[lang]
+              detail = page(item['detail'])
+              glossary = page(item['glossary'])
+              assert f'data-sdgplus-goal="{goal["id"]}"' in detail, item['detail']
+              assert item['title'] in html.unescape(detail), item['detail']
+              assert item['title'] in html.unescape(glossary), item['glossary']
+              assert item['detail'] in links(item['glossary'], glossary), item['glossary']
+              return item['detail']
+
+          checked = []
+          with ThreadPoolExecutor(max_workers=3) as pool:
+              for lang, root in roots.items():
+                  overview = page(root)
+                  assert 'data-sdgplus-reference="1.0"' in overview, root
+                  assert re.findall(r'data-sdgplus-number="(\d+)"', overview) == [str(n) for n in range(1, 10)]
+                  assert {g[lang]['detail'] for g in goals} <= links(root, overview), root
+                  assert root + 'matrix/' in links(root, overview), root
+                  assert root + 'toolkit/' in links(root, overview), root
+                  table = page(root + 'matrix/')
+                  assert len(re.findall(r'\bdata-pair(?:\s|=)', table)) == 153
+                  toolkit = page(root + 'toolkit/')
+                  assert assets + f'sdgplus-kurzuebersicht-{lang}.pdf' in toolkit
+                  assert assets + f'sdgplus-zielkarten-{lang}.zip' in toolkit
+                  checked.extend(pool.map(lambda goal: goal_pages(lang, goal), goals))
+          print(f'HTTP 200 and content verified for both overviews, both matrices, both toolkits, and {len(checked)} goal pages plus their glossaries.')
+
+          catalogue = json.loads(read(origin + '/assets/search/browser-index-manifest.json'))
+          search_raw = gzip.decompress(read(origin + '/assets/search/' + catalogue['core']['gzip']))
+          assert all(path.encode() in search_raw for path in checked), 'goal pages absent from live browser search'
+          print('All 18 goals are present in the live browser search.')
+          guide = page('/bibliothek/woek-begriffsleitfaden-fuehrend-v1-9/')
+          assert 'WOeK_Begriffsleitfaden_fuehrend_v1.9_2026-11-26.pdf' in guide
+          old = page('/bibliothek/woek-begriffsleitfaden-fuehrend/')
+          print('Historic guide has version notice:', 'sdgplus-stand-v19' in old)
+          print('SDGPLUS_LIVE_VERIFIED=PASS')
+          PY
